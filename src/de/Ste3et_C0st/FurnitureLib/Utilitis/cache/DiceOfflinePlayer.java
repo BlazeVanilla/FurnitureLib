@@ -2,17 +2,16 @@ package de.Ste3et_C0st.FurnitureLib.Utilitis.cache;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 public class DiceOfflinePlayer {
 
-	private OfflinePlayer offlinePlayer;
 	private final UUID uuid;
 	private String name;
 	private long lastSeen;
 	
 	public DiceOfflinePlayer(OfflinePlayer offlinePlayer) {
-		this.offlinePlayer = offlinePlayer;
 		this.uuid = offlinePlayer.getUniqueId();
 		this.name = offlinePlayer.getName();
 		this.setLastSeen(offlinePlayer.getLastPlayed());
@@ -27,7 +26,7 @@ public class DiceOfflinePlayer {
 	}
 
 	public OfflinePlayer getOfflinePlayer() {
-		return offlinePlayer;
+		return Bukkit.getOfflinePlayer(this.uuid);
 	}
 
 	public long getLastSeen() {
@@ -39,13 +38,12 @@ public class DiceOfflinePlayer {
 	}
 	
 	public boolean isOnline() {
-		return offlinePlayer.isOnline();
+		return Bukkit.getServer().getPlayer(this.uuid).isOnline();
 	}
 	
 	public void update(OfflinePlayer player) {
 		this.name = player.getName();
 		this.lastSeen = player.getLastPlayed();
-		this.offlinePlayer = player;
 	}
 	
 }

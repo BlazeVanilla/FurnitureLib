@@ -12,6 +12,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -88,7 +90,11 @@ public class ObjectIdManager {
 
 	public void updatePlayerView(Player player) {
 		if(player.isOnline()) {
-			getAllExistObjectIDs().filter(entry -> entry.getPlayerList().contains(player) || entry.canSee(player)).forEach(entry -> entry.updatePlayerView(player));
+			for(ObjectID id : getAllExistObjectIDs()) {
+				if(id.getPlayerList().contains(player) || id.canSee(player)) {
+					id.updatePlayerView(player);
+				}
+			}
 			//this.updateModels(player);
 		}
 	}
@@ -96,21 +102,43 @@ public class ObjectIdManager {
 	public void sendAllInView(Player player) {
 		if(player.isOnline()) {
 			String worldName = player.getWorld().getName();
-			getAllExistObjectIDs().filter(entry -> entry.getWorldName().equalsIgnoreCase(worldName) && entry.isInRange(player)).forEach(entry -> entry.sendArmorStands(player));
+
+			for(ObjectID objectID : getAllExistObjectIDs()) {
+				if(objectID.getWorldName().equalsIgnoreCase(worldName) && objectID.isInRange(player)) {
+					objectID.sendArmorStands(player);
+				}
+			}
 		}
 	}
 	
 	public void removeAllNotInView(Player player) {
-		getAllExistObjectIDs().filter(entry -> entry.getPlayerList().contains(player)).forEach(entry -> entry.removeArmorStands(player));
+		for(ObjectID objectID : getAllExistObjectIDs()) {
+			if(objectID.getPlayerList().contains(player)) {
+				objectID.removeArmorStands(player);
+			}
+		}
 	}
 	
 	
 	public HashSet<ObjectID> getFromPlayer(UUID uuid) {
-		return new HashSet<ObjectID>(getAllExistObjectIDs().filter(entry -> entry.getUUID().equals(uuid)).collect(Collectors.toList()));
+		HashSet<ObjectID> objects = Sets.newHashSet();
+
+		for(ObjectID id : getAllExistObjectIDs()) {
+			if(id.getUUID().equals(uuid)) {
+				objects.add(id);
+			}
+		}
+		return objects;
+
 	}
 	
 	public ObjectID getObjectIDByString(String objID) {
-        return getAllExistObjectIDs().filter(entry -> entry.getID().equalsIgnoreCase(objID)).findFirst().orElse(null);
+		for(ObjectID id : getAllExistObjectIDs()) {
+			if(id.getID().equalsIgnoreCase(objID)) {
+				return id;
+			}
+		}
+		return null;
     }
 	
 	public HashSet<ObjectID> getInChunk(Chunk c) {
@@ -124,15 +152,28 @@ public class ObjectIdManager {
     }
 	
 	public ObjectID getObjectIDByEntityID(int entityID) {
-		return getAllExistObjectIDs().filter(entry -> entry.containsEntity(entityID)).findFirst().orElse(null);
+		for(ObjectID id : getAllExistObjectIDs()) {
+			if(id.containsEntity(entityID)) {
+				return id;
+			}
+		}
+		return null;
 	}
 	
 	public ObjectID getfArmorStandByID(int entityID) {
 		return getObjectIDByEntityID(entityID);
 	}
 	
-	public Stream<ObjectID> getAllExistObjectIDs(){
-		return objectList.stream().filter(predicate);
+	public HashSet<ObjectID> getAllExistObjectIDs(){
+
+		HashSet<ObjectID> objectIDS = Sets.newHashSet();
+
+		for(ObjectID objectID : objectList) {
+			if(predicate.test(objectID)) {
+				objectIDS.add(objectID);
+			}
+		}
+		return objectIDS;
 	}
 	
 	public Stream<ObjectID> getAllObjectIDs(){

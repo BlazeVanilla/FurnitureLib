@@ -2,7 +2,6 @@ package de.Ste3et_C0st.FurnitureLib.Command;
 
 import de.Ste3et_C0st.FurnitureLib.Crafting.Project;
 import de.Ste3et_C0st.FurnitureLib.NBT.MathHelper;
-import de.Ste3et_C0st.FurnitureLib.SchematicLoader.functions.projectFunction;
 import de.Ste3et_C0st.FurnitureLib.Utilitis.ExecuteTimer;
 import de.Ste3et_C0st.FurnitureLib.Utilitis.RandomStringGenerator;
 import de.Ste3et_C0st.FurnitureLib.Utilitis.Wrapper.ChatComponentWrapper;
@@ -171,15 +170,15 @@ public class debugCommand extends iCommand {
             			if(dif < (60 * 1000)) {
             				if(sender.hasPermission("furniture.debug.fixmodel")) {
                     			ExecuteTimer timer = new ExecuteTimer();
-                    			sender.sendMessage("try to fix §d" + FurnitureManager.getInstance().getAllExistObjectIDs().count() + " §fModels");
+                    			sender.sendMessage("try to fix §d" + FurnitureManager.getInstance().getAllExistObjectIDs().size() + " §fModels");
                     			Bukkit.getScheduler().runTaskAsynchronously(FurnitureLib.getInstance(), () -> {
-                    				FurnitureManager.getInstance().getAllExistObjectIDs().filter(Objects::nonNull).forEach(entry -> {
-                        				Project project = FurnitureManager.getInstance().getProject(entry.getProject());
-                        				if(Objects.nonNull(project)) {
-                        					project.fixMetadata(entry);
-                            				entry.setSQLAction(SQLAction.UPDATE);
-                        				}
-                        			});
+                    				for(ObjectID objectID : FurnitureManager.getInstance().getAllExistObjectIDs()) {
+                    					Project project = FurnitureManager.getInstance().getProject(objectID.getProject());
+                    					if(Objects.nonNull(project)) {
+                    						project.fixMetadata(objectID);
+                    						objectID.setSQLAction(SQLAction.UPDATE);
+										}
+									}
                         			sender.sendMessage("finish after " + timer.getMilliString());
                         			sender.sendMessage("please use /furniture save");
                     			});

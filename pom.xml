@@ -152,10 +152,10 @@
 		</dependency>
 
 		<dependency>
-            <groupId>io.github.qveshn</groupId>
-            <artifactId>LightAPI-fork</artifactId>
-            <version>3.4.5-SNAPSHOT</version>
-            <scope>provided</scope>
+			<groupId>io.github.qveshn</groupId>
+			<artifactId>LightAPI-fork</artifactId>
+			<version>3.4.6-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
